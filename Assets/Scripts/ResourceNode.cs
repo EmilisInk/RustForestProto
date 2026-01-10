@@ -6,6 +6,8 @@ public class ResourceNode : MonoBehaviour
 {
     public string resourceType;
     public int totalResources = 1000;
+
+    public Item item;
     public int Gather()
     {
         if (totalResources <= 0)
@@ -23,8 +25,19 @@ public class ResourceNode : MonoBehaviour
         int gatheredAmount = Mathf.Min(gatherAmount, totalResources);
         totalResources -= gatheredAmount;
 
+        if(InventoryManager.Instance != null && item != null)
+        {
+            InventoryManager.Instance.AddItem(item, gatheredAmount);
+            Debug.Log("Added " + gatheredAmount + " " + item.itemName + " to inventory.");
+        }
+
         Debug.Log("Gathered " + gatheredAmount + " from " + resourceType + ". Remaining: " + totalResources);
 
+        if(totalResources <= 0)
+        {
+            Destroy(gameObject);
+        }
+
         return gatheredAmount;
-   }
+    }
 }
