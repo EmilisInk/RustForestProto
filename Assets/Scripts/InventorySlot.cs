@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using Unity.VisualScripting;
+using System;
 
 public class InventorySlot : MonoBehaviour,
     IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler
@@ -17,7 +18,7 @@ public class InventorySlot : MonoBehaviour,
     private Transform originalParent;
     private Canvas canvas;
 
-    private void Start()
+    private void Awake()
     {
         canvas = GetComponentInParent<Canvas>();
         Clear();
@@ -96,24 +97,43 @@ public class InventorySlot : MonoBehaviour,
         return item == newItem;
     }
 
-    public void SetItem(Item newItem, int addAmount)
+    public int AddAmount(Item newItem, int addAmount)
     {
-        Debug.Log("SetItem called on slot " + gameObject.name + " with item: " + newItem.name + " amount: " + addAmount);
-        if (item == null) item = newItem;
-        amount += addAmount;
+        if(item == null)
+        {
+            item = newItem;
+            amount = 0;
+        }
 
-        if (icon != null)
+        int spaceLeft = item.maxStack - amount;
+        int added = Mathf.Min(spaceLeft, addAmount);
+
+        amount += added;
+
+        UpdateUI();
+
+        return addAmount - added;
+    }
+
+    public int RemoveAmount(int removeAmount)
+    {
+        if(item == null) return removeAmount;
+        int removed = Mathf.Min(amount, removeAmount);
+        amount -= removed;
+        if(amount <= 0)
         {
-            icon.sprite = item.icon;
-            icon.enabled = true;
-            icon.color = Color.white;
+            item = null;
+            amount = 0;
         }
-        if (amountText != null)
-        {
-            amountText.text = amount.ToString();
-            amountText.enabled = true;
-        }
-        Debug.Log($"Slot {gameObject.name} now has {amount} of {item.itemName}");
+        UpdateUI();
+        return removeAmount - removed;
+    }
+
+    public void SetItemDirect(Item newItem, int newAmount)
+    {
+        item = newItem;
+        amount = newAmount;
+        UpdateUI();
     }
     public void Clear()
     {
@@ -121,4 +141,16 @@ public class InventorySlot : MonoBehaviour,
         amount = 0;
         UpdateUI();
     }
+
+    public int GetAmount()
+    {
+        return amount;
+    }
+
+    public Item GetItem()
+    {
+        return item;
+    }
+
+
 }
