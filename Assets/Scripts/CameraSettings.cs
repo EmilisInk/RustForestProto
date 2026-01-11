@@ -26,6 +26,9 @@ public class CameraSettings : MonoBehaviour
     }
     void Update()
     {
+        if (ToggleInventory.isOpen)
+            return;
+
         float mouseX = Input.GetAxis("Mouse X") * sensitivity * Time.deltaTime;
         float mouseY = Input.GetAxis("Mouse Y") * sensitivity * Time.deltaTime;
 

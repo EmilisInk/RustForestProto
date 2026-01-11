@@ -9,6 +9,9 @@ public class Mining : MonoBehaviour
 
     void Update()
     {
+        if(ToggleInventory.isOpen)
+            return;
+
         if (Input.GetMouseButtonDown(0))
         {
             RaycastHit hit;

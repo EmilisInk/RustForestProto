@@ -19,6 +19,7 @@ public class ResourceNode : MonoBehaviour
         int gatherAmount = 0;
         if (resourceType == "Tree") gatherAmount = 50;
         else if (resourceType == "Rock") gatherAmount = 30;
+        else if (resourceType == "Metal") gatherAmount = 50;
         else gatherAmount = 5;
 
 

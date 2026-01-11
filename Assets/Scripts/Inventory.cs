@@ -8,9 +8,9 @@ public class Inventory : MonoBehaviour
     public bool isOpen = false;
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Tab))
+        if (Input.GetKeyDown(KeyCode.Tab))
         {
-            if(!isOpen)
+            if (!isOpen)
             {
                 inventory.SetActive(true);
                 isOpen = true;
@@ -22,12 +22,5 @@ public class Inventory : MonoBehaviour
             }
 
         }
-    }
-
-    void addToInventory(string itemName, int amount)
-    {
-        // Implementation for adding items to the inventory
-        
-
     }
 }
