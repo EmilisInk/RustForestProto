@@ -5,11 +5,54 @@ using UnityEngine;
 public class InventoryManager : MonoBehaviour
 {
     public static InventoryManager Instance;
+
+    [Header("UI Elements")]
+    public GameObject inventoryPanel;
+    public Transform slotsParent;
+
     public InventorySlot[] slots;
+
+
+    [Header("Hotbar")]
+    public int hotbarSize = 6;
+    public int hotbarStartIndex = 23;
+
+    private List<GameObject> hideObjects = new List<GameObject>();
+
 
     private void Awake()
     {
         Instance = this;
+
+        hideObjects.Clear();
+        for(int c =  0; c < inventoryPanel.transform.childCount; c++)
+        {
+            var child = inventoryPanel.transform.GetChild(c).gameObject;
+            if (slotsParent != null && child == slotsParent.gameObject) continue;
+            hideObjects.Add(child);
+        }
+    }
+
+    public void SetInventoryOpen(bool open)
+    {
+        foreach(var go in hideObjects)
+            if(go != null) go.SetActive(open);
+
+        if(slotsParent != null)
+            slotsParent.gameObject.SetActive(true);
+
+        for(int i = 0; i < slots.Length; i++)
+        {
+            bool isHotbar = (i >= hotbarStartIndex && i < hotbarStartIndex + hotbarSize);
+            slots[i].gameObject.SetActive(isHotbar || open);
+        }
+    }
+
+    public int GetHotbarItemAmount(int index)
+    {
+        if(index < 0 || index >= hotbarSize) return 0;
+        if(index >= slots.Length) return 0;
+        return slots[index].GetAmount();
     }
 
     public void AddItem(Item item, int amount)
@@ -20,7 +63,7 @@ public class InventoryManager : MonoBehaviour
         {
             if (!slot.IsEmpty() && slot.IsSameItem(item))
             {
-                remaining = slot.AddAmount(item, amount);
+                remaining = slot.AddAmount(item, remaining);
                 if(remaining <= 0) return;
             }
         }
@@ -29,7 +72,7 @@ public class InventoryManager : MonoBehaviour
         {
             if (slot.IsEmpty())
             {
-                remaining = slot.AddAmount(item, amount);
+                remaining = slot.AddAmount(item, remaining);
                 if(remaining <= 0) return;
             }
         }
@@ -44,7 +87,7 @@ public class InventoryManager : MonoBehaviour
         {
             if (!slot.IsEmpty() && slot.IsSameItem(item))
             {
-                remaining = slot.RemoveAmount(amount);
+                remaining = slot.RemoveAmount(remaining);
                 if(remaining <= 0) return;
             }
         }
@@ -65,5 +108,28 @@ public class InventoryManager : MonoBehaviour
             }
         }
         return false;
+    }
+
+    public InventorySlot GetHotbarSlot(int hotbarIndex)
+    {
+        int index = hotbarStartIndex + hotbarIndex;
+
+        if (slots == null) return null;
+        if (hotbarIndex < 0 || hotbarIndex >= hotbarSize) return null;
+        if (index < 0 || index >= slots.Length) return null;
+
+        return slots[index];
+    }
+
+    public Item GetHotbarItem(int hotbarIndex)
+    {
+        var s = GetHotbarSlot(hotbarIndex);
+        return s != null ? s.GetItem() : null;
+    }
+
+    public int GetHotbarAmount(int hotbarIndex)
+    {
+        var s = GetHotbarSlot(hotbarIndex);
+        return s != null ? s.GetAmount() : 0;
     }
 }

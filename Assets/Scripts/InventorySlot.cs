@@ -1,9 +1,11 @@
-using UnityEngine;
-using TMPro;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
-using Unity.VisualScripting;
 using System;
+using System.Collections.Generic;
+using TMPro;
+using Unity.VisualScripting;
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class InventorySlot : MonoBehaviour,
     IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler
@@ -18,18 +20,23 @@ public class InventorySlot : MonoBehaviour,
     private Transform originalParent;
     private Canvas canvas;
 
+    private static InventorySlot draggedSlot;
+
     private void Awake()
     {
         canvas = GetComponentInParent<Canvas>();
         Clear();
     }
 
+
     public bool IsEmpty() => item == null;
 
     public void OnBeginDrag(PointerEventData eventData)
     {
         if(IsEmpty()) return;
-        
+
+        draggedSlot = this;
+
         originalParent = icon.transform.parent;
         icon.transform.SetParent(canvas.transform);
         icon.raycastTarget = false;
@@ -37,29 +44,26 @@ public class InventorySlot : MonoBehaviour,
 
     public void OnDrag(PointerEventData eventData)
     {
-        if(!IsEmpty()) return;
+        if(IsEmpty()) return;
         
         icon.transform.position = eventData.position;
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        InventorySlot fromSlot = eventData.pointerDrag?.GetComponent<InventorySlot>();
-        if (fromSlot == null || fromSlot == this)
-        {
-            return;
-        }
+        icon.transform.SetParent(originalParent);
+        icon.transform.localPosition = Vector3.zero;
+        icon.raycastTarget = true;
 
-        SwapItems(fromSlot);
+        draggedSlot = null;
     }
 
 
     public void OnDrop(PointerEventData eventData)
     {
-        InventorySlot fromSlot = eventData?.pointerDrag?.GetComponent<InventorySlot>();
-        if (fromSlot == null || fromSlot == this) return;
+        if (draggedSlot == null || draggedSlot == this) return;
 
-        SwapItems(fromSlot);
+        SwapItems(draggedSlot);
     }
 
     public void SwapItems(InventorySlot other)

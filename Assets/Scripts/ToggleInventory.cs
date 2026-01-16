@@ -4,29 +4,31 @@ using UnityEngine;
 
 public class ToggleInventory : MonoBehaviour
 {
-    public GameObject inventoryUI;
     public static bool isOpen = false;
 
-    void Start()
+    public Transform buttonsGroup;
+
+    private void Start()
     {
-        inventoryUI.SetActive(isOpen);
+        InventoryManager.Instance.SetInventoryOpen(isOpen);
+
+        buttonsGroup.gameObject.SetActive(isOpen);
     }
+
     private void Update()
     {
         if(Input.GetKeyDown(KeyCode.Tab))
         {
             isOpen = !isOpen;
-            inventoryUI.SetActive(isOpen);
-            if (isOpen)
-            {
-                Cursor.visible = true;
-                Cursor.lockState = CursorLockMode.None;
-            }
-            else
-            {
-                Cursor.visible = false;
-                Cursor.lockState = CursorLockMode.Locked;
-            }
+            
+            InventoryManager.Instance.SetInventoryOpen(isOpen);
+
+            buttonsGroup.gameObject.SetActive(isOpen);
+            if (isOpen && buttonsGroup != null)
+                buttonsGroup.SetAsLastSibling();
+
+            Cursor.visible = isOpen;
+            Cursor.lockState = isOpen ? CursorLockMode.None : CursorLockMode.Locked;
         }
     }
 }
