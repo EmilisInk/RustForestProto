@@ -7,6 +7,8 @@ public class Mining : MonoBehaviour
     [Header("Mining Settings")]
     public float miningRange = 1f;
 
+    public Swing swing;
+
     void Update()
     {
         if(ToggleInventory.isOpen)
@@ -20,6 +22,18 @@ public class Mining : MonoBehaviour
                 ResourceNode resourceNode = hit.collider.GetComponent<ResourceNode>();
                 if (resourceNode != null)
                 {
+                    Item tool = InventoryManager.Instance.GetHotbarItem(0);
+
+                    if(!CanMine(tool, resourceNode.resourceType))
+                    {
+                        Debug.Log("Cannot mine this resource with the current tool.");
+                        return;
+
+                    }
+                    if (swing != null && swing.IsPlaying) return;
+
+                    if(swing != null) swing.Play();
+
                     resourceNode.Gather();
                 }
                 else
@@ -33,5 +47,22 @@ public class Mining : MonoBehaviour
 
             }
         }
+    }
+
+    bool CanMine(Item tool, string resourceType)
+    {
+        if (tool == null) return false;
+
+        string toolName = tool.itemName;
+
+        if (toolName == "Rock") return true;
+
+        if((toolName == "StoneHatchet" || toolName == "MetalHatchet") && resourceType == "Tree")
+            return true;
+
+        if((toolName == "StonePickaxe" || toolName == "MetalPickaxe") && resourceType == "Rock" || resourceType == "Metal" || resourceType == "Sulfur")
+            return true;
+
+        return false;
     }
 }

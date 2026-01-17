@@ -8,6 +8,10 @@ public class Crafting : MonoBehaviour
 
     private CraftRecipe currentRecipe;
 
+    public Item selectedItem;
+    private Item craftingItem;
+
+
     public void Craft(Item outputItem)
     {
         foreach (CraftRecipe recipe in recipes)
@@ -19,7 +23,7 @@ public class Crafting : MonoBehaviour
                 if(HasMaterials(recipe))
                 {
                     RemoveMaterials(recipe);
-                    StartCoroutine(CraftDelay());
+                    StartCoroutine(CraftDelay(currentRecipe));
                 }
                 else
                 {
@@ -54,10 +58,10 @@ public class Crafting : MonoBehaviour
         }
     }
 
-    IEnumerator CraftDelay()
+    IEnumerator CraftDelay(CraftRecipe recipeToCraft)
     {
         yield return new WaitForSeconds(2f);
-        InventoryManager.Instance.AddItem(currentRecipe.output, 1);
+        InventoryManager.Instance.AddItem(recipeToCraft.output, 1);
         Debug.Log("Crafted: " + currentRecipe.output.itemName);
     }
 }

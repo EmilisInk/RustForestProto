@@ -13,12 +13,29 @@ public class Shooting : MonoBehaviour
     public int maxAmmo = 30;
     private int currentAmmo;
 
+    [Header("Equip check")]
+    public Item gunItem;
+    public int selectedHotbarIndex = 0;
+    public bool blockWhenInventoryOpen = true;
+
     private void Start()
     {
         currentAmmo = maxAmmo;
     }
     void Update()
     {
+        if (blockWhenInventoryOpen && ToggleInventory.isOpen)
+        {
+            return;
+        }
+        if (InventoryManager.Instance == null) return;
+
+        Item selected = InventoryManager.Instance.GetHotbarItem(selectedHotbarIndex);
+        if (selected == null || selected != gunItem)
+        {
+            return;
+        }
+
         if (Input.GetMouseButtonDown(0))
         {
             TryShoot();

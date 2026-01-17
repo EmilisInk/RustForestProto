@@ -12,6 +12,15 @@ public class InventoryManager : MonoBehaviour
 
     public InventorySlot[] slots;
 
+    [Header("Starting Items")]
+    public Item startingItem1;
+    public int startingItem1Amount = 1;
+    public Item startingItem2;
+    public int startingItem2Amount = 1;
+    public int starterSlotIndex1 = 24;
+    public int starterSlotIndex2 = 25;
+
+
 
     [Header("Hotbar")]
     public int hotbarSize = 6;
@@ -19,6 +28,17 @@ public class InventoryManager : MonoBehaviour
 
     private List<GameObject> hideObjects = new List<GameObject>();
 
+    private void Start()
+    {
+        if (startingItem1 != null)
+        {
+            slots[starterSlotIndex1].AddAmount(startingItem1, startingItem1Amount);
+        }
+        if (startingItem2 != null)
+        {
+            slots[starterSlotIndex2].AddAmount(startingItem2, startingItem2Amount);
+        }
+    }
 
     private void Awake()
     {
