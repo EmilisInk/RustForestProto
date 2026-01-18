@@ -119,6 +119,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2224f3e7d6a4b74419f40e4b3a2bb323, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  resourceType: Rock
+  resourceType: Stone
   totalResources: 1000
   item: {fileID: 6247110008546511749, guid: 45bf1ff2f0e555242beeac1040741e7f, type: 3}

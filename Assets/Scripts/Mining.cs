@@ -60,7 +60,7 @@ public class Mining : MonoBehaviour
         if((toolName == "StoneHatchet" || toolName == "MetalHatchet") && resourceType == "Tree")
             return true;
 
-        if((toolName == "StonePickaxe" || toolName == "MetalPickaxe") && resourceType == "Rock" || resourceType == "Metal" || resourceType == "Sulfur")
+        if((toolName == "StonePickaxe" || toolName == "MetalPickaxe") && resourceType == "Stone" || resourceType == "Metal" || resourceType == "Sulfur")
             return true;
 
         return false;
