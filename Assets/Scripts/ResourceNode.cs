@@ -24,19 +24,19 @@ public class ResourceNode : MonoBehaviour
         //else gatherAmount = 5;
 
         Item tool = InventoryManager.Instance.GetHotbarItem(0);
-        if (resourceType == "Tree" && tool.itemName == "Rock") gatherAmount = 10;
+        if (resourceType == "Tree" && tool.itemName == "Rock") gatherAmount = 1000;
         else if (resourceType == "Tree" && tool.itemName == "StoneHatchet") gatherAmount = 20;
         else if (resourceType == "Tree" && tool.itemName == "MetalHatchet") gatherAmount = 30;
 
-        else if (resourceType == "Stone" && tool.itemName == "Rock") gatherAmount = 7;
+        else if (resourceType == "Stone" && tool.itemName == "Rock") gatherAmount = 700;
         else if (resourceType == "Stone" && tool.itemName == "StonePickaxe") gatherAmount = 36;
         else if (resourceType == "Stone" && tool.itemName == "MetalPickaxe") gatherAmount = 45;
 
-        else if (resourceType == "Metal" && tool.itemName == "Rock") gatherAmount = 5;
+        else if (resourceType == "Metal" && tool.itemName == "Rock") gatherAmount = 500;
         else if (resourceType == "Metal" && tool.itemName == "StonePickaxe") gatherAmount = 24;
         else if (resourceType == "Metal" && tool.itemName == "MetalPickaxe") gatherAmount = 30;
 
-        else if (resourceType == "Sulfur" && tool.itemName == "Rock") gatherAmount = 3;
+        else if (resourceType == "Sulfur" && tool.itemName == "Rock") gatherAmount = 300;
         else if (resourceType == "Sulfur" && tool.itemName == "StonePickaxe") gatherAmount = 18;
         else if (resourceType == "Sulfur" && tool.itemName == "MetalPickaxe") gatherAmount = 50;
         else

@@ -18,9 +18,14 @@ public class Shooting : MonoBehaviour
     public int selectedHotbarIndex = 0;
     public bool blockWhenInventoryOpen = true;
 
+    public Camera cam;
+    public float maxDistance = 200f;
+    public ParticleSystem shootingFlash;
+
     private void Start()
     {
         currentAmmo = maxAmmo;
+        cam = Camera.main;
     }
     void Update()
     {
@@ -57,15 +62,21 @@ public class Shooting : MonoBehaviour
             return;
         }
 
+        shootingFlash.Emit(2);
+
         Shoot();
         currentAmmo--;
         lastShootTime = Time.time;
     }
     void Shoot()
     {
-        GameObject projectile = Instantiate(projectilePrefab, shootPoint.position, shootPoint.rotation);
+        Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+
+        Vector3 dir = ray.direction;
+
+        GameObject projectile = Instantiate(projectilePrefab, shootPoint.position, Quaternion.LookRotation(dir));
         Rigidbody rb = projectile.GetComponent<Rigidbody>();
-        rb.AddForce(shootPoint.forward * shootForce);
+        rb.AddForce(dir * shootForce);
     }
     public void Reload()
     {
