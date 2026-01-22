@@ -29,8 +29,6 @@ public class EquipedObject : MonoBehaviour
 
         if (item == null) return;
 
-        Debug.Log("HOTBAR ITEM: " + item.itemName);
-
         if (item.itemName == "Rock")
         {
             rock.SetActive(true);

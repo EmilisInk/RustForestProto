@@ -43,7 +43,7 @@ public class Mining : MonoBehaviour
             }
             else
             {
-                Debug.Log("No hit raycast");
+
 
             }
         }
