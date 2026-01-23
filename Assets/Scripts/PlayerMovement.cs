@@ -30,6 +30,8 @@ public class PlayerMovement : MonoBehaviour
 
     private float standCamY;
 
+    public float health = 100f;
+
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -124,5 +126,15 @@ public class PlayerMovement : MonoBehaviour
     private void Lazertronas()
     {
         isGrounded = Physics.Raycast(transform.position, Vector3.down, col.bounds.extents.y + 0.1f);
+    }
+    public void TakeDamage(float damage, Vector3 knockbackDirection, float knockbackForce)
+    {
+        health -= damage;
+
+        if (rb != null)
+        {
+            rb.AddForce(knockbackDirection * knockbackForce * 20, ForceMode.Impulse);
+
+        }
     }
 }
