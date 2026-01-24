@@ -11,40 +11,37 @@ public class Mining : MonoBehaviour
 
     void Update()
     {
-        if(ToggleInventory.isOpen)
+        if (ToggleInventory.isOpen)
             return;
 
-        if (Input.GetMouseButtonDown(0))
+        if (!Input.GetMouseButtonDown(0))
+            return;
+
+        if (swing != null && swing.IsPlaying)
+            return;
+
+        if (swing != null)
+            swing.Play();
+
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, transform.forward, out hit, miningRange))
         {
-            RaycastHit hit;
-            if (Physics.Raycast(transform.position, transform.forward, out hit, miningRange))
+            ResourceNode resourceNode = hit.collider.GetComponent<ResourceNode>();
+            if (resourceNode != null)
             {
-                ResourceNode resourceNode = hit.collider.GetComponent<ResourceNode>();
-                if (resourceNode != null)
+                Item tool = InventoryManager.Instance.GetHotbarItem(0);
+
+                if (!CanMine(tool, resourceNode.resourceType))
                 {
-                    Item tool = InventoryManager.Instance.GetHotbarItem(0);
-
-                    if(!CanMine(tool, resourceNode.resourceType))
-                    {
-                        Debug.Log("Cannot mine this resource with the current tool.");
-                        return;
-
-                    }
-                    if (swing != null && swing.IsPlaying) return;
-
-                    if(swing != null) swing.Play();
-
-                    resourceNode.Gather();
+                    Debug.Log("Cannot mine this resource with the current tool.");
+                    return;
                 }
-                else
-                {
-                    Debug.Log("No resource node found at the hit location.");
-                }
+
+                resourceNode.Gather();
             }
             else
             {
-
-
+                Debug.Log("No resource node found at the hit location.");
             }
         }
     }

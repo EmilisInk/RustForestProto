@@ -1,43 +1,42 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    public float lifeTime = 3;
-    public int damage = 3;
-    public float knockbackForce = 2f;
+    public int damage = 5;
+    public float lifeTime = 3f;
+
+    [HideInInspector] public GameObject owner;
 
     void Start()
     {
-        Invoke(nameof(SelfDestruct), lifeTime);
+        Destroy(gameObject, lifeTime);
     }
 
-    void SelfDestruct()
+    private void OnTriggerEnter(Collider other)
     {
-        //Instantiate(explosion, transform.position, Quaternion.identity);
-        Destroy(gameObject);
-    }
+        // ignore shooter
+        if (owner != null && other.transform.IsChildOf(owner.transform))
+            return;
 
-    private void OnCollisionEnter(Collision other)
-    {
-        Enemy enemy = other.transform.GetComponent<Enemy>();
-        enemy = other.collider.GetComponentInParent<Enemy>();
+        // Player
+        PlayerHealth ph = other.GetComponentInParent<PlayerHealth>();
+        if (ph != null)
+        {
+            ph.TakeDamage(damage);
+            Destroy(gameObject);
+            return;
+        }
 
+        // Enemy
+        Enemy enemy = other.GetComponentInParent<Enemy>();
         if (enemy != null)
         {
-            Vector3 knockbackDirection = (other.transform.position - transform.position).normalized;
-            enemy.TakeDamage(damage, knockbackDirection, knockbackForce);
-            SelfDestruct();
+            enemy.TakeDamage(damage);
+            Destroy(gameObject);
             return;
         }
 
-        if (other.transform.CompareTag("Player"))
-        {
-            SelfDestruct();
-            return;
-        }
-
-        SelfDestruct();
+        // walls/ground/etc
+        Destroy(gameObject);
     }
 }

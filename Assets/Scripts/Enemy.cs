@@ -6,177 +6,85 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     [Header("Health")]
-    public int health = 10;
-    public int maxHealth = 10;
+    public int maxHealth = 20;
+    public int health;
 
-    [Header("Ray / Attack Range")]
-    public float rayDistance = 2f;
-    public float rayHeight = 1.0f;
+    [Header("Target")]
+    public Transform player;
+    public float detectionRange = 20f;
+    public float rotateSpeed = 6f;
 
-    [Header("Damage")]
-    public float damage = 2f;
-    public float knockbackForce = 2f;
-    public float selfKnockbackMultiplier = 1f;
+    [Header("Shooting")]
+    public GameObject bulletPrefab;
+    public Transform shootPoint;
+    public float shootSpeed = 40f;
+    public float shootCooldown = 0.8f;
+    public float aimHeight = 0.5f;
 
-    [Header("Attack Cooldown")]
-    public float attackCooldown = 1.5f;
-    private float nextAttackTime = 0f;
-
-    [Header("Speed")]
-    public float speed = 3f;
-    public float stoppingDistance = 1f;
-
-    [Header("Stun")]
-    public float stunTime = 0.3f;
-    private bool concusioned = false;
-    private Coroutine concussionRoutine;
-
-    [Header("Particles")]
-    public ParticleSystem getHiteffect;
-
-    [Header("Animator Parameter Names")]
-    public string animIsMoving = "isMoving";
-    public string animAttack = "attack";
-    public string animIsDead = "isDead";
-
-    [HideInInspector] public bool isDead = false;
-
-    private GameObject player;
-    private Rigidbody rb;
-    private Animator animator;
+    float nextShootTime;
 
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
-        animator = GetComponent<Animator>();
-        player = GameObject.FindWithTag("Player");
+        health = maxHealth;
 
-        health = Mathf.Clamp(health, 0, maxHealth);
+        GameObject p = GameObject.FindWithTag("Player");
+        if (p != null) player = p.transform;
     }
 
     void Update()
     {
-        if (isDead || player == null) return;
+        if (player == null) return;
 
-        float dist = Vector3.Distance(transform.position, player.transform.position);
-        bool moving = dist > stoppingDistance && !concusioned;
+        float dist = Vector3.Distance(transform.position, player.position);
+        if (dist > detectionRange) return;
 
-        animator.SetBool(animIsMoving, moving);
+        AimAtPlayer();
 
-        TryAttack();
+        if (Time.time >= nextShootTime)
+        {
+            ShootAtPlayer();
+            nextShootTime = Time.time + shootCooldown;
+        }
     }
 
-    void FixedUpdate()
+    void AimAtPlayer()
     {
-        if (isDead || player == null) return;
-        GoToPlayer();
+        Vector3 dir = player.position - transform.position;
+        dir.y = 0f;
+
+        if (dir.sqrMagnitude < 0.001f) return;
+
+        Quaternion targetRot = Quaternion.LookRotation(dir.normalized);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, rotateSpeed * Time.deltaTime);
     }
 
-    public void TakeDamage(int dmg, Vector3 knockbackDirection, float kbForce)
+    void ShootAtPlayer()
     {
-        if (isDead) return;
+        if (bulletPrefab == null || shootPoint == null) return;
 
-        health -= dmg;
+        Vector3 aimPoint = player.position + Vector3.up * aimHeight;
+        Vector3 dir = (aimPoint - shootPoint.position).normalized;
 
-        // Enemy knockback
-        rb.AddForce(knockbackDirection.normalized * kbForce * selfKnockbackMultiplier, ForceMode.Impulse);
+        GameObject bullet = Instantiate(bulletPrefab, shootPoint.position, Quaternion.LookRotation(dir));
 
-        // Stun (stop moving for a moment)
-        if (concussionRoutine != null) StopCoroutine(concussionRoutine);
-        concussionRoutine = StartCoroutine(Stun());
+        Bullet b = bullet.GetComponent<Bullet>();
+        if (b != null) b.owner = gameObject;
+
+        Rigidbody rb = bullet.GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.useGravity = false;
+            rb.isKinematic = false;
+            rb.velocity = dir * shootSpeed;
+        }
+    }
+
+    public void TakeDamage(int damage)
+    {
+        health -= damage;
+        Debug.Log("Turret HP: " + health);
 
         if (health <= 0)
-            Die();
-    }
-
-    IEnumerator Stun()
-    {
-        concusioned = true;
-        yield return new WaitForSeconds(stunTime);
-        concusioned = false;
-    }
-
-
-
-    void Die()
-    {
-        isDead = true;
-
-        animator.SetBool(animIsDead, true);
-
-        if (getHiteffect != null)
-        {
-            var fx = Instantiate(getHiteffect, transform.position, Quaternion.identity);
-            fx.Play();
-            Destroy(fx.gameObject, fx.main.duration + fx.main.startLifetime.constantMax);
-        }
-
-        rb.velocity = Vector3.zero;
-        rb.angularVelocity = Vector3.zero;
-        rb.isKinematic = true;
-        animator.speed = 1f;
-
-        StartCoroutine(FreezeAfterDeath(1.2f));
-    }
-    IEnumerator FreezeAfterDeath(float time)
-    {
-        yield return new WaitForSeconds(time);
-        animator.speed = 0f;
-    }
-
-    void GoToPlayer()
-    {
-        float dist = Vector3.Distance(transform.position, player.transform.position);
-
-        if (dist > stoppingDistance && !concusioned)
-        {
-            Vector3 dir = (player.transform.position - transform.position).normalized;
-            rb.MovePosition(rb.position + dir * speed * Time.fixedDeltaTime);
-        }
-
-        Vector3 lookDirection = player.transform.position - transform.position;
-        lookDirection.y = 0f;
-
-        if (lookDirection.sqrMagnitude > 0.0001f)
-            rb.rotation = Quaternion.LookRotation(lookDirection);
-    }
-    void TryAttack()
-    {
-        if (Time.time < nextAttackTime) return;
-
-        Vector3 origin = transform.position + Vector3.up * rayHeight;
-        Ray ray = new Ray(origin, transform.forward);
-
-        if (Physics.Raycast(ray, out RaycastHit hit, rayDistance))
-        {
-            if (hit.collider.CompareTag("Player"))
-            {
-                animator.SetTrigger(animAttack);
-
-                DamagePlayer();
-
-                nextAttackTime = Time.time + attackCooldown;
-            }
-        }
-    }
-
-    public void DamagePlayer()
-    {
-        if (isDead || player == null) return;
-
-        float dist = Vector3.Distance(transform.position, player.transform.position);
-        if (dist > rayDistance + 0.25f) return;
-
-        var pm = player.GetComponent<PlayerMovement>();
-        if (pm == null) return;
-
-        Vector3 knockbackDir = (player.transform.position - transform.position).normalized;
-        pm.TakeDamage(damage, knockbackDir, knockbackForce);
-    }
-    void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Vector3 origin = transform.position + Vector3.up * rayHeight;
-        Gizmos.DrawRay(origin, transform.forward * rayDistance);
+            Destroy(gameObject);
     }
 }

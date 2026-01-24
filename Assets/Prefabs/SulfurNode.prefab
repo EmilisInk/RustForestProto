@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2774611185114359613}
   - component: {fileID: 8938106720113194463}
   - component: {fileID: 2124949058576589236}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SulfurNode
   m_TagString: Untagged
   m_Icon: {fileID: 0}

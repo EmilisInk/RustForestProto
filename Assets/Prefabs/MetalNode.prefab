@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2337530077657707950}
   - component: {fileID: 7701813793889597396}
   - component: {fileID: 5346775928387270093}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: MetalNode
   m_TagString: Untagged
   m_Icon: {fileID: 0}

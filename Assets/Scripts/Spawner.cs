@@ -12,6 +12,10 @@ public class Spawner : MonoBehaviour
     public float respawnDelay = 10f;
     public float minDistanceBetweenNodes = 5f;
 
+    [Header("Overlap Check")]
+    public float overlapRadius = 2f;
+    public LayerMask blockSpawnLayers;
+
 
     private List<GameObject> spawnedNodes = new List<GameObject>();
 
@@ -29,7 +33,7 @@ public class Spawner : MonoBehaviour
         Vector3 pos = GetRandomTerrainPosition();
 
         int tries = 30;
-        while(tries-- > 0 && IsTooClose(pos))
+        while(tries-- > 0 && IsTooClose(pos) || IsPositionBlocked(pos))
         {
             pos = GetRandomTerrainPosition();
         }
@@ -42,6 +46,11 @@ public class Spawner : MonoBehaviour
         NodeRespawnWatcher w = obj.AddComponent<NodeRespawnWatcher>();
         w.spawner = this;
     }
+
+    bool IsPositionBlocked(Vector3 pos)
+    {
+        return Physics.CheckSphere(pos, overlapRadius, blockSpawnLayers);
+    }   
 
     Vector3 GetRandomTerrainPosition()
     {
