@@ -7,6 +7,7 @@ public class Shooting : MonoBehaviour
 {
     public GameObject projectilePrefab;
     public Transform shootPoint;
+    public AudioSource shootAudio;
 
     [Header("Shoot")]
     public float shootSpeed = 40f;
@@ -65,6 +66,8 @@ public class Shooting : MonoBehaviour
         if (shootingFlash != null) shootingFlash.Emit(2);
 
         Shoot();
+        if (shootAudio != null)
+            shootAudio.Play();
         currentAmmo--;
         ammoText.text = currentAmmo.ToString();
         lastShootTime = Time.time;

@@ -4,13 +4,15 @@ using UnityEngine;
 
 public class EquipedObject : MonoBehaviour
 {
-    public GameObject rock;
-    public GameObject ak;
-    public GameObject torch;
+    public GameObject Rock;
+    public GameObject Ak;
+    public GameObject Torch;
     public GameObject StoneAxe;
     public GameObject StonePickaxe;
     public GameObject MetalAxe;
     public GameObject MetalPickaxe;
+    public GameObject BuildingPlan;
+    public GameObject Hammer;
 
     private void Update()
     {
@@ -18,28 +20,30 @@ public class EquipedObject : MonoBehaviour
 
         Item item = InventoryManager.Instance.GetHotbarItem(0);
 
-        rock.SetActive(false);
-        ak.SetActive(false);
-        torch.SetActive(false);
+        Rock.SetActive(false);
+        Ak.SetActive(false);
+        Torch.SetActive(false);
         StoneAxe.SetActive(false);
         StonePickaxe.SetActive(false);
         MetalAxe.SetActive(false);
         MetalPickaxe.SetActive(false);
+        BuildingPlan.SetActive(false);
+        Hammer.SetActive(false);
 
 
         if (item == null) return;
 
         if (item.itemName == "Rock")
         {
-            rock.SetActive(true);
+            Rock.SetActive(true);
         }
         else if (item.itemName == "AK")
         {
-            ak.SetActive(true);
+            Ak.SetActive(true);
         }
         else if (item.itemName == "Torch")
         {
-            torch.SetActive(true);
+            Torch.SetActive(true);
         }
         else if (item.itemName == "StoneHatchet")
         {
@@ -56,6 +60,14 @@ public class EquipedObject : MonoBehaviour
         else if (item.itemName == "MetalPickaxe")
         {
             MetalPickaxe.SetActive(true);
+        }
+        else if (item.itemName == "BuildingPlan")
+        {
+            BuildingPlan.SetActive(true);
+        }
+        else if (item.itemName == "Hammer")
+        {
+            Hammer.SetActive(true);
         }
     }
 }

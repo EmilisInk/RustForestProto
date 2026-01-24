@@ -7,13 +7,21 @@ public class Swing : MonoBehaviour
     public Vector3 swingRotation = new Vector3(-40f, 20f, 0f);
     public float swingTime = 0.08f;
 
+    public int selectedHotbarIndex = 0;
+
     private Coroutine routine;
+
 
     public bool IsPlaying { get; private set; }
     public void Play()
     {
         if (!gameObject.activeInHierarchy) return;
         if (IsPlaying) return;
+        if(InventoryManager.Instance == null) return;
+
+        Item item = InventoryManager.Instance.GetHotbarItem(selectedHotbarIndex);
+        if(item != null && item.isWeapon)
+            return;
 
         routine = StartCoroutine(Swings());
     }

@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
+    
     [Header("Health")]
     public int maxHealth = 20;
     public int health;
@@ -20,6 +21,7 @@ public class Enemy : MonoBehaviour
     public float shootSpeed = 40f;
     public float shootCooldown = 0.8f;
     public float aimHeight = 0.5f;
+    public AudioSource shootAudio;
 
     float nextShootTime;
 
@@ -77,6 +79,9 @@ public class Enemy : MonoBehaviour
             rb.isKinematic = false;
             rb.velocity = dir * shootSpeed;
         }
+
+        if (shootAudio != null)
+            shootAudio.Play();
     }
 
     public void TakeDamage(int damage)
