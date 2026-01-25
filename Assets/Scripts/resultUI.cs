@@ -5,19 +5,13 @@ using UnityEngine;
 
 public class resultUI : MonoBehaviour
 {
-    [Header("Panels")]
     public GameObject winPanel;
     public GameObject losePanel;
 
-    [Header("Time Texts")]
     public TMP_Text winTimeText;
     public TMP_Text loseTimeText;
 
-    [Header("Timer")]
     public Timeris timer;
-
-    [Header("Disable these scripts on end (drag your Movement, CameraSettings, Shooting, Mining etc.)")]
-    public MonoBehaviour[] disableOnEnd;
 
     private bool ended;
 
@@ -25,7 +19,8 @@ public class resultUI : MonoBehaviour
     {
         if (winPanel != null) winPanel.SetActive(false);
         if (losePanel != null) losePanel.SetActive(false);
-        ended = false;
+
+        if (timer == null) timer = FindObjectOfType<Timeris>();
     }
 
     public void ShowWin()
@@ -33,14 +28,15 @@ public class resultUI : MonoBehaviour
         if (ended) return;
         ended = true;
 
-        float t = (timer != null) ? timer.StopTimer() : 0f;
+        float t = timer != null ? timer.StopTimer() : 0f;
 
         if (losePanel != null) losePanel.SetActive(false);
         if (winPanel != null) winPanel.SetActive(true);
+
         if (winTimeText != null && timer != null)
             winTimeText.text = "Time Survived: " + timer.FormatTime(t);
 
-        FreezeGame();
+        PauseAndCursor();
     }
 
     public void ShowLose()
@@ -48,27 +44,28 @@ public class resultUI : MonoBehaviour
         if (ended) return;
         ended = true;
 
-        float t = (timer != null) ? timer.StopTimer() : 0f;
+        float t = timer != null ? timer.StopTimer() : 0f;
 
         if (winPanel != null) winPanel.SetActive(false);
         if (losePanel != null) losePanel.SetActive(true);
+
         if (loseTimeText != null && timer != null)
             loseTimeText.text = "Time Survived: " + timer.FormatTime(t);
 
-        FreezeGame();
+        PauseAndCursor();
     }
 
-    void FreezeGame()
+    void PauseAndCursor()
     {
         Time.timeScale = 0f;
-
-        if (disableOnEnd != null)
-        {
-            foreach (var s in disableOnEnd)
-                if (s != null) s.enabled = false;
-        }
-
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
+    }
+
+    public void Unpause()
+    {
+        Time.timeScale = 1f;
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 }

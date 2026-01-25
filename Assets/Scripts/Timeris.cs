@@ -8,29 +8,29 @@ public class Timeris : MonoBehaviour
     private float stoppedTime;
     private bool running;
 
-    void Start()
+    void Awake()
     {
         StartTimer();
     }
 
     public void StartTimer()
     {
-        startTime = Time.time;
-        running = true;
+        startTime = Time.unscaledTime;
         stoppedTime = 0f;
+        running = true;
     }
 
     public float StopTimer()
     {
         if (!running) return stoppedTime;
-        stoppedTime = Time.time - startTime;
+        stoppedTime = Time.unscaledTime - startTime;
         running = false;
         return stoppedTime;
     }
 
     public float GetTime()
     {
-        return running ? (Time.time - startTime) : stoppedTime;
+        return running ? (Time.unscaledTime - startTime) : stoppedTime;
     }
 
     public string FormatTime(float seconds)
