@@ -6,6 +6,7 @@ public class PlayerHealth : MonoBehaviour
 {
     public int maxHealth = 100;
     public int currentHealth;
+    public GameObject lossUI;
 
     void Start()
     {
@@ -21,7 +22,7 @@ public class PlayerHealth : MonoBehaviour
 
         if (currentHealth <= 0)
         {
-            Debug.Log("PLAYER DIED");
+            FindObjectOfType<resultUI>()?.ShowLose();
         }
     }
 
