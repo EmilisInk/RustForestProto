@@ -8,6 +8,8 @@ public class Mining : MonoBehaviour
     public float miningRange = 1f;
 
     public Swing swing;
+    public AudioSource hites;
+    public AudioSource hiter;
 
     void Update()
     {
@@ -18,10 +20,17 @@ public class Mining : MonoBehaviour
             return;
 
         if (swing != null && swing.IsPlaying)
+        {
             return;
-
+        }
+            
         if (swing != null)
+        {
             swing.Play();
+            hiter.Play();
+        }
+            
+
 
         RaycastHit hit;
         if (Physics.Raycast(transform.position, transform.forward, out hit, miningRange))
@@ -30,18 +39,22 @@ public class Mining : MonoBehaviour
             if (resourceNode != null)
             {
                 Item tool = InventoryManager.Instance.GetHotbarItem(0);
+                
 
                 if (!CanMine(tool, resourceNode.resourceType))
                 {
-                    Debug.Log("Cannot mine this resource with the current tool.");
+                    //Debug.Log("Cannot mine this resource with the current tool.");
                     return;
                 }
 
+                hites.Play();
                 resourceNode.Gather();
+                
             }
             else
             {
-                Debug.Log("No resource node found at the hit location.");
+                
+                //Debug.Log("No resource node found at the hit location.");
             }
         }
     }
